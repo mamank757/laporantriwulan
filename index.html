@@ -291,11 +291,8 @@
         }
     }
 
-    async function generateAI() {
+async function generateAI() {
     const btn = document.getElementById('btn-ai');
-    // MASUKKAN API KEY GEMINI YANG BARU DI SINI
-    const apiKey = "AIzaSyCgRBl2qCEpLuOKObarm1H04itMXGCUhdw"; 
-    
     btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Menyusun Laporan...";
     btn.disabled = true;
 
@@ -323,35 +320,28 @@
     Data Penyuluh: ${document.getElementById('in_nama').value}, BPP: ${document.getElementById('in_bpp').value}, Periode: ${document.getElementById('in_triwulan').value}.
     Data Realisasi: ${JSON.stringify(selectedData)}
     Aturan:
-    1. 'latar': Narasi formal tentang tantangan pertanian wilayah binaan dan harus mencerminkan kondisi pertanian wilayah setempat dan tupoksi Penyuluh Pertanian sesuai PERMENPAN (minimal 2 paragraf).
-    2. 'tujuan': Deskripsi tujuan laporan evaluasi triwulan.
-    3. 'kesimp': Ringkasan evaluasi capaian triwulanan secara naratif (minimal 2 paragraf).
-    4. 'items': Iterasi data. 'analisis' jelaskan progres akumulatif 3 bulan. 'tindak' beri solusi teknis spesifik.
+    1. 'latar': Narasi formal minimal 2 paragraf mencerminkan kondisi pertanian setempat.
+    2. 'tujuan': Deskripsi tujuan laporan evaluasi.
+    3. 'kesimp': Ringkasan evaluasi capaian (minimal 2 paragraf).
+    4. 'items': Iterasi data. 'analisis' jelaskan progres. 'tindak' beri solusi teknis.
     Output wajib JSON murni tanpa markdown: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
 
     try {
-        // 1. URL Berubah ke endpoint Gemini
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbybfKedzdw22elhzNwBt4EFtyVNIV7dmHg5IOFjqbiZ12-4GuiQE6raYxH1daVnvKI8/exec";
 
-        const response = await fetch(url, {
+        // Menggunakan method POST tanpa no-cors agar bisa membaca response
+        const response = await fetch(webAppUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                "contents": [{
-                    "parts": [{ "text": prompt }]
-                }],
-                "generationConfig": {
-                    "responseMimeType": "application/json" // Memastikan output JSON
-                }
-            })
+            body: JSON.stringify({ prompt: prompt })
         });
 
         const result = await response.json();
         
-        // 2. Cara ambil text respons Gemini berbeda dengan Groq
+        // Mengambil data dari response Apps Script (struktur Gemini)
         const rawContent = result.candidates[0].content.parts[0].text;
         const aiData = JSON.parse(rawContent);
 
+        // Isi ke elemen HTML
         document.getElementById('out_latar').innerText = aiData.latar;
         document.getElementById('out_tujuan').innerText = aiData.tujuan;
         document.getElementById('out_kesimp').innerText = aiData.kesimp;
@@ -364,13 +354,13 @@
         });
 
         alert("✅ Laporan Berhasil Disusun!");
-    } catch (error) { 
+
+    } catch (error) {
         console.error(error);
-        alert("Gagal memproses AI. Pastikan API Key benar dan internet stabil."); 
-    } 
-    finally { 
-        btn.innerHTML = "🚀 GENERATE AI"; 
-        btn.disabled = false; 
+        alert("Gagal memproses AI. Pastikan Apps Script sudah di-deploy sebagai 'Anyone'.");
+    } finally {
+        btn.innerHTML = "🚀 GENERATE AI";
+        btn.disabled = false;
     }
 }
     window.onload = init;
