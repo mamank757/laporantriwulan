@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Laporan Triwulan PPL WAJO - King Mamank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        
+        /* PENGATURAN KERTAS F4 */
+        .page {
+            background: white; width: 215mm; min-height: 330mm;
+            padding: 20mm 20mm; margin: 20px auto; color: black;
+            font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); position: relative;
+            box-sizing: border-box; display: flex; flex-direction: column;
+        }
+
+        /* NOMOR HALAMAN DIKUNCI DI BAWAH */
+        .page-number { position: absolute; bottom: 10mm; left: 50%; transform: translateX(-50%); font-size: 10pt; z-index: 10; }
+        
+        /* FIX TABEL BREAK & MARGIN */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 8.5pt; table-layout: fixed; page-break-inside: auto; }
+        thead { display: table-header-group; } 
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        th, td { border: 1px solid black; padding: 6px 4px; vertical-align: top; word-wrap: break-word; }
+        th { background-color: #f3f4f6; font-weight: bold; text-align: center; text-transform: uppercase; }
+
+        /* TANDA TANGAN LAYERED */
+        .sig-container { display: inline-block; min-width: 250px; text-align: center; position: relative; margin-top: 10px; }
+        .img-ttd { position: absolute; left: 50%; bottom: 0px; transform: translateX(-50%); max-height: 100px; width: auto; z-index: 10; mix-blend-mode: multiply; pointer-events: none; }
+        .name-line { font-weight: bold; text-transform: uppercase; border-bottom: 1px solid black; display: inline-block; padding: 0 5px; position: relative; z-index: 5; }
+
+        @media print {
+            @page { size: 215mm 330mm; margin: 20mm 15mm; }
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .page { margin: 0; box-shadow: none; width: 100%; min-height: initial; height: auto; padding: 0; page-break-after: always; overflow: visible !important; display: block; }
+            .sampul-page { display: flex !important; min-height: 290mm !important; flex-direction: column !important; justify-content: space-between !important; padding: 20mm 0 !important; }
+        }
+
+        .no-print-area { background: #1e293b; border-radius: 15px; padding: 25px; border: 1px solid #334155; }
+        .input-card { background: #334155; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #475569; }
+        .input-card.active { border-left-color: #10b981; background: #1e293b; }
+        textarea, input, select { width: 100%; background: #0f172a; border: 1px solid #475569; color: white; padding: 8px; border-radius: 6px; margin-top: 8px; }
+        .ai-content { color: black !important; font-style: normal !important; text-align: justify; white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+<div class="no-print max-w-7xl mx-auto p-4">
+    <div class="no-print-area shadow-2xl border-t-4 border-emerald-500">
+        <h2 class="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-3">
+            <i class="fa-solid fa-file-invoice"></i> PPL WAJO REPORT GENERATOR - TRIWULAN (F4)
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="lg:col-span-1 flex flex-col gap-3"> 
+                <label class="text-xs font-bold text-slate-400 uppercase">Data Penyuluh</label>
+                <input type="text" id="in_nama" oninput="sync()" placeholder="Abdul Rahman, SP">
+                <input type="text" id="in_nip" oninput="sync()" placeholder="NIP">
+                <select id="in_jabatan" onchange="sync()">
+                    <option value="Penyuluh Pertanian Pemula">Penyuluh Pertanian Pemula</option>
+                        <option value="Penyuluh Pertanian Terampil">Penyuluh Pertanian Terampil</option>
+                        <option value="Penyuluh Pertanian Mahir">Penyuluh Pertanian Mahir</option>
+                        <option value="Penyuluh Pertanian Penyelia">Penyuluh Pertanian Penyelia</option>
+                        <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Ahli Pertama</option>
+                        <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Ahli Muda</option>
+                        <option value="Penyuluh Pertanian Ahli Madya">Penyuluh Pertanian Ahli Madya</option>
+                        <option value="Penyuluh Pertanian Ahli Utama">Penyuluh Pertanian Ahli Utama</option>
+                </select>
+                <input type="text" id="in_wkpp" oninput="sync()" placeholder="WKPP">
+                <input type="text" id="in_bpp" oninput="sync()" placeholder="Kecamatan/BPP">
+                <select id="in_triwulan" onchange="sync()">
+                    <option value="TRIWULAN I">Triwulan I</option>
+                    <option value="TRIWULAN II">Triwulan II</option>
+                    <option value="TRIWULAN III">Triwulan III</option>
+                    <option value="TRIWULAN IV">Triwulan IV</option>
+                </select>
+                <input type="date" id="in_tanggal" oninput="sync()">
+                <div class="flex flex-col gap-1">
+    <label class="text-[10px] font-bold text-slate-400 uppercase">Upload TTD (Format PNG Transparan)</label>
+    <div class="relative group">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fa-solid fa-signature text-slate-500"></i>
+        </div>
+        <input type="file" id="in_ttd" accept="image/*" onchange="handleTTD(this)" 
+            class="pl-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+    </div>
+    <p class="text-[9px] text-slate-500 italic">*Tulisan TTD akan muncul otomatis di lembar cetak</p>
+</div>
+                <button onclick="generateAI()" id="btn-ai" class="mt-4 w-full bg-indigo-600 py-4 rounded-xl font-bold text-white shadow-lg">🚀 GENERATE AI</button>
+                <button onclick="window.print()" class="w-full bg-emerald-600 py-3 rounded-xl font-bold text-white">CETAK/SIMPAN</button>
+            </div>
+            <div class="lg:col-span-3">
+                <label class="text-xs font-bold text-slate-400 uppercase mb-3 block italic">Input Realisasi Bulan I, II, dan III dlm satuan lap atau persen (gunakan angka):</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[700px] overflow-y-auto pr-2" id="input_container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="report-container flex flex-col items-center">
+    <div class="page sampul-page flex flex-col items-center justify-between py-24 text-center">
+        <div class="w-full">
+            <h1 class="text-2xl font-bold mb-2">LAPORAN KINERJA TRIWULAN</h1>
+            <h2 class="text-lg font-bold px-10 leading-snug">Pelaksanaan Tugas Pendampingan Program Utama<br>Kementerian Pertanian</h2>
+        </div>
+        <div class="flex-grow flex flex-col justify-center items-center w-full space-y-12">
+            <div class="space-y-3 uppercase">
+                <h3 class="font-bold text-xl" id="out_tri_cover">TRIWULAN I</h3>
+                <p class="text-lg font-bold" id="out_jabatan_cover">PENYULUH PERTANIAN</p>
+            </div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Logo_Kementerian_Pertanian_Republik_Indonesia.svg/3840px-Logo_Kementerian_Pertanian_Republik_Indonesia.svg.png" class="w-48 mx-auto">
+            <div class="max-w-md mx-auto text-left pl-10 space-y-3 uppercase text-sm">
+                <div class="grid grid-cols-3 gap-x-2"><span>NAMA</span><span class="col-span-2">: <b id="out_nama_cover">-</b></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>NIP</span><span class="col-span-2">: <span id="out_nip_cover">-</span></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>WKPP</span><span class="col-span-2">: <span id="out_wkpp_cover">-</span></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>BPP WILAYAH</span><span class="col-span-2">: <span id="out_bpp_cover">-</span></span></div>
+            </div>
+        </div>
+        <div class="font-bold uppercase space-y-1">
+            <p>KEMENTERIAN PERTANIAN</p>
+            <p>BADAN PENYULUHAN DAN PENGEMBANGAN SDM PERTANIAN</p>
+            <p>PUSAT PENYULUHAN PERTANIAN</p>
+            <p class="mt-8 text-lg">2026</p>
+        </div>
+        <div class="page-number" style="display:none;"></div>
+    </div>
+
+    <div class="page">
+        <h2 class="text-center font-bold text-lg uppercase mb-8">BAB I. PENDAHULUAN</h2>
+        <h3 class="font-bold text-sm uppercase">1.1. Latar Belakang</h3>
+        <div id="out_latar" class="ai-content mb-6">Menunggu AI...</div>
+        <h3 class="font-bold text-sm uppercase">1.2. Tujuan Pelaporan</h3>
+        <div id="out_tujuan" class="ai-content">...</div>
+        <div class="page-number">1</div>
+    </div>
+
+    <div class="page">
+        <h2 class="text-center font-bold text-lg uppercase mb-6">BAB II. PEMBAHASAN</h2>
+        <h3 class="font-bold text-sm uppercase">2.1. Ringkasan Target vs Realisasi</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 45%;">Indikator Kinerja Individu (IKI)</th>
+                    <th style="width: 15%;">Target</th>
+                    <th style="width: 15%;">Realisasi</th>
+                    <th style="width: 10%;">Satuan</th>
+                    <th style="width: 15%;">Status</th>
+                </tr>
+            </thead>
+            <tbody id="out_target_body"></tbody>
+        </table>
+        <h3 class="font-bold text-sm uppercase mt-8">2.2. Matriks Analisis Capaian Kinerja</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30px;">No</th>
+                    <th style="width: 30%;">Komponen IKI</th>
+                    <th style="width: 40%;">Analisis Kinerja</th>
+                    <th style="width: 30%;">Kendala & Tindak Lanjut</th>
+                </tr>
+            </thead>
+            <tbody id="out_table_body"></tbody>
+        </table>
+        <div class="page-number">2</div>
+    </div>
+
+    <div class="page flex flex-col justify-between">
+        <div>
+            <h2 class="text-center font-bold text-lg uppercase mb-8">BAB III. KESIMPULAN</h2>
+            <div id="out_kesimp" class="ai-content leading-relaxed">...</div>
+        </div>
+        <div class="flex justify-end mb-10">
+            <div class="sig-container">
+                <span id="out_lokasi_tgl">..., ...</span><br>Penyuluh Pertanian,
+                <div class="h-24 flex items-center justify-center relative">
+                    <img id="out_ttd_img" src="" class="img-ttd hidden">
+                </div>
+                <p class="name-line" id="out_nama_sig">-</p><br>
+                NIP. <span id="out_nip_sig">-</span>
+            </div>
+        </div>
+        <div class="page-number">3</div>
+    </div>
+</div>
+
+<script>
+    const ikiRef = [
+        { id: 1, k: "Jumlah Laporan Luas Tambah Tanam (Padi, Jagung, Kedelai)", tar: 3, sat: "Laporan" },
+        { id: 2, k: "Persentase Pendampingan Produksi Hortikultura", tar: 100, sat: "%" },
+        { id: 3, k: "Persentase Pendampingan Hilirisasi Perkebunan", tar: 100, sat: "%" },
+        { id: 4, k: "Persentase Pendampingan Produksi Ternak", tar: 100, sat: "%" },
+        { id: 5, k: "Persentase Pendampingan Pemanfaatan Alsintan", tar: 100, sat: "%" },
+        { id: 6, k: "Persentase Pendampingan RDKK Pupuk Subsidi", tar: 100, sat: "%" },
+        { id: 7, k: "Persentase Pendampingan CSR", tar: 100, sat: "%" },
+        { id: 8, k: "Persentase Pendampingan Irigasi", tar: 100, sat: "%" },
+        { id: 9, k: "Persentase Penderasan Materi & Kelompencapir Digital", tar: 100, sat: "%" },
+        { id: 10, k: "Persentase Pendampingan Brigade Pangan (BP)", tar: 100, sat: "%" },
+        { id: 11, k: "Persentase Pengawalan CPCL Bantuan Pemerintah", tar: 100, sat: "%" },
+        { id: 12, k: "Persentase Verval Distribusi Pupuk Subsidi", tar: 100, sat: "%" },
+        { id: 13, k: "Persentase Pelaksanaan Tugas Fungsi Penyuluhan", tar: 100, sat: "%" },
+        { id: 14, k: "Jumlah Data Statistik Pertanian Hortikultura", tar: 6, sat: "Data" },
+        { id: 15, k: "Jumlah Laporan Data Statistik Tanaman Pangan", tar: 3, sat: "Laporan" },
+        { id: 16, k: "Jumlah Laporan Data Statistik Perkebunan", tar: 3, sat: "Laporan" }
+    ];
+
+   function init() {
+        const cont = document.getElementById('input_container');
+        ikiRef.forEach((item) => {
+            cont.innerHTML += `<div class="input-card" id="card_${item.id}">
+                <div class="flex items-start gap-3 mb-3">
+                    <input type="checkbox" id="chk_${item.id}" onchange="toggle(${item.id})" class="mt-1 w-4 h-4 shrink-0">
+                    <label class="text-white text-[11px] font-bold leading-tight cursor-pointer" for="chk_${item.id}">
+                        ${item.id}. ${item.k}
+                    </label>
+                </div>
+
+                <div id="box_${item.id}" class="hidden flex flex-col gap-3 ml-7">
+                    <div class="space-y-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wider">Capaian Bulan I</label>
+                            <input type="number" id="m1_${item.id}" placeholder="Realisasi (angka saja, persen tulis 100)" oninput="updateView()" class="w-full">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wider">Capaian Bulan II</label>
+                            <input type="number" id="m2_${item.id}" placeholder="Realisasi (angka saja, persen tulis 100)" oninput="updateView()" class="w-full">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wider">Capaian Bulan III</label>
+                            <input type="number" id="m3_${item.id}" placeholder="Realisasi (angka saja, persen tulis 100)" oninput="updateView()" class="w-full">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wider">Kendala / Tindak Lanjut</label>
+                        <textarea id="ken_${item.id}" placeholder="Tulis singkat kendala atau deskripsi kegiatan secara umum" class="w-full"></textarea>
+                    </div>
+                </div>
+            </div>`;
+        });
+        sync();
+    }
+
+    function toggle(id) {
+        document.getElementById(`box_${id}`).classList.toggle('hidden', !document.getElementById(`chk_${id}`).checked);
+        document.getElementById(`card_${id}`).classList.toggle('active', document.getElementById(`chk_${id}`).checked);
+        updateView();
+    }
+
+    function updateView() {
+        const tbT = document.getElementById('out_target_body');
+        const tbM = document.getElementById('out_table_body');
+        tbT.innerHTML = ""; tbM.innerHTML = "";
+        let c = 1;
+        ikiRef.forEach((item) => {
+            if(document.getElementById(`chk_${item.id}`).checked) {
+                const v1 = parseFloat(document.getElementById(`m1_${item.id}`).value) || 0;
+                const v2 = parseFloat(document.getElementById(`m2_${item.id}`).value) || 0;
+                const v3 = parseFloat(document.getElementById(`m3_${item.id}`).value) || 0;
+                const total = (item.sat === "%") ? Math.max(v1, v2, v3) : (v1 + v2 + v3);
+                tbT.innerHTML += `<tr><td>${item.k}</td><td align="center">${item.tar}</td><td align="center"><b>${total}</b></td><td align="center">${item.sat}</td><td align="center">${total >= item.tar ? '✅ TERCAPAI' : '⚠️ BELUM'}</td></tr>`;
+                tbM.innerHTML += `<tr><td align="center">${c++}</td><td class="font-bold">${item.k}</td><td id="out_r_${item.id}">...</td><td id="out_k_${item.id}">-</td></tr>`;
+            }
+        });
+    }
+
+    function sync() {
+        const val = (id) => document.getElementById(id).value;
+        document.getElementById('out_tri_cover').innerText = val('in_triwulan');
+        document.getElementById('out_nama_cover').innerText = val('in_nama') || "-";
+        document.getElementById('out_nip_cover').innerText = val('in_nip') || "-";
+        document.getElementById('out_wkpp_cover').innerText = (val('in_wkpp') || "-").toUpperCase();
+        document.getElementById('out_bpp_cover').innerText = (val('in_bpp') || "-").toUpperCase();
+        document.getElementById('out_nama_sig').innerText = val('in_nama') || "-";
+        document.getElementById('out_nip_sig').innerText = val('in_nip') || "-";
+        const date = val('in_tanggal') ? new Date(val('in_tanggal')).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'}) : "...";
+        document.getElementById('out_lokasi_tgl').innerText = `${val('in_bpp') || "Bola"}, ${date}`;
+        updateView();
+    }
+
+    function handleTTD(input) {
+        const img = document.getElementById('out_ttd_img');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { img.src = e.target.result; img.classList.remove('hidden'); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    async function generateAI() {
+    const btn = document.getElementById('btn-ai');
+    // MASUKKAN API KEY GEMINI YANG BARU DI SINI
+    const apiKey = "AIzaSyCgRBl2qCEpLuOKObarm1H04itMXGCUhdw"; 
+    
+    btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Menyusun Laporan...";
+    btn.disabled = true;
+
+    let selectedData = [];
+    ikiRef.forEach((item) => {
+        if(document.getElementById(`chk_${item.id}`).checked) {
+            selectedData.push({
+                id: item.id,
+                nama: item.k,
+                m1: document.getElementById(`m1_${item.id}`).value || 0,
+                m2: document.getElementById(`m2_${item.id}`).value || 0,
+                m3: document.getElementById(`m3_${item.id}`).value || 0,
+                kendala_user: document.getElementById(`ken_${item.id}`).value
+            });
+        }
+    });
+
+    if(selectedData.length === 0) {
+        btn.innerHTML = "🚀 GENERATE AI";
+        btn.disabled = false;
+        return alert("Pilih minimal satu IKI!");
+    }
+
+    const prompt = `Anda adalah PPL Pertanian Profesional. Tugas: Menyusun laporan TRIWULAN formal standar Kementerian Pertanian.
+    Data Penyuluh: ${document.getElementById('in_nama').value}, BPP: ${document.getElementById('in_bpp').value}, Periode: ${document.getElementById('in_triwulan').value}.
+    Data Realisasi: ${JSON.stringify(selectedData)}
+    Aturan:
+    1. 'latar': Narasi formal tentang tantangan pertanian wilayah binaan dan harus mencerminkan kondisi pertanian wilayah setempat dan tupoksi Penyuluh Pertanian sesuai PERMENPAN (minimal 2 paragraf).
+    2. 'tujuan': Deskripsi tujuan laporan evaluasi triwulan.
+    3. 'kesimp': Ringkasan evaluasi capaian triwulanan secara naratif (minimal 2 paragraf).
+    4. 'items': Iterasi data. 'analisis' jelaskan progres akumulatif 3 bulan. 'tindak' beri solusi teknis spesifik.
+    Output wajib JSON murni tanpa markdown: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
+
+    try {
+        // 1. URL Berubah ke endpoint Gemini
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "contents": [{
+                    "parts": [{ "text": prompt }]
+                }],
+                "generationConfig": {
+                    "responseMimeType": "application/json" // Memastikan output JSON
+                }
+            })
+        });
+
+        const result = await response.json();
+        
+        // 2. Cara ambil text respons Gemini berbeda dengan Groq
+        const rawContent = result.candidates[0].content.parts[0].text;
+        const aiData = JSON.parse(rawContent);
+
+        document.getElementById('out_latar').innerText = aiData.latar;
+        document.getElementById('out_tujuan').innerText = aiData.tujuan;
+        document.getElementById('out_kesimp').innerText = aiData.kesimp;
+
+        aiData.items.forEach(item => {
+            const rCell = document.getElementById(`out_r_${item.id}`);
+            const kCell = document.getElementById(`out_k_${item.id}`);
+            if(rCell) rCell.innerText = item.analisis;
+            if(kCell) kCell.innerText = item.tindak;
+        });
+
+        alert("✅ Laporan Berhasil Disusun!");
+    } catch (error) { 
+        console.error(error);
+        alert("Gagal memproses AI. Pastikan API Key benar dan internet stabil."); 
+    } 
+    finally { 
+        btn.innerHTML = "🚀 GENERATE AI"; 
+        btn.disabled = false; 
+    }
+}
+    window.onload = init;
+</script>
+</body>
+</html>
