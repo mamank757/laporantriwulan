@@ -338,8 +338,10 @@ async function generateAI() {
         const result = await response.json();
         
         // Mengambil data dari response Apps Script (struktur Gemini)
-        const rawContent = result.candidates[0].content.parts[0].text;
-        const aiData = JSON.parse(rawContent);
+       let rawContent = result.candidates[0].content.parts[0].text;
+// Bersihkan jika ada bungkus markdown ```json
+rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+const aiData = JSON.parse(rawContent);
 
         // Isi ke elemen HTML
         document.getElementById('out_latar').innerText = aiData.latar;
