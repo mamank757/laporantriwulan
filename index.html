@@ -332,9 +332,15 @@ async function generateAI() {
         // Menggunakan method POST tanpa no-cors agar bisa membaca response
         const response = await fetch(webAppUrl, {
             method: "POST",
+            mode: "cors", // Pastikan cors, bukan no-cors
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8", // Gunakan text/plain untuk menghindari preflight CORS
+            },
             body: JSON.stringify({ prompt: prompt })
         });
 
+        if (!response.ok) throw new Error('Network response was not ok');
+        
         const result = await response.json();
         
         // Mengambil data dari response Apps Script (struktur Gemini)
