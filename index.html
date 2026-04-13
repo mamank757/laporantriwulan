@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Triwulan PPL - King Mamank</title>
+    <title>Form Lap. Triwulan PPL MILENIAL WAJO - King Mamank</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/mamank757/laporantriwulan/99a53aa811aa2ca20fd3c0c0ba2194be56d2b5e6/Gemini_Generated_Image_o9onvjo9onvjo9on%20(1)%20(1).png">
@@ -77,31 +77,15 @@
         </button>
     </div>
 </div>
-
 <div class="no-print max-w-7xl mx-auto p-4">
     <div class="no-print-area shadow-2xl border-t-4 border-emerald-500">
         <h2 class="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-3">
-            <i class="fa-solid fa-file-invoice"></i> PPL MILENIAL WAJO REPORT GENERATOR - TRIWULAN
+            <i class="fa-solid fa-file-invoice"></i> FORM SKP Triwulan PPL MILENIAL WAJO GENERATOR - TRIWULAN
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
             <div class="lg:col-span-1 flex flex-col gap-3"> 
-                <label>INDENTITAS PENYULUH</label>
-                        <input type="text" id="in_nama" list="daftar_nama" oninput="updateDataPenyuluh()" placeholder="Pilih/Tulis Nama">
-                        <datalist id="daftar_nama">
-                            <option value="ABDUL RAHMAN, SP">
-                            <option value="A. FATHUR MUH. ISHAQ B, S.ST., M.Si">
-                            <option value="ANDI LUTHFIAH, SP">
-                            <option value="FITRIYANTI HASNURI, S.TP">
-                            <option value="INDRA YULIANA, S.TP., M.Si.">
-                            <option value="MIFTAHUL KHAIR, S.P.">
-                            <option value="NURUL FAHMI, S.P.">
-                            <option value="REZKI RAHAYU, S.P.">
-                            <option value="RIZAL SMITH ANUGRAH SYAM, S.P.">
-                            <option value="SUHADY HAMDAN, S.P.">
-                            <option value="SULFIANITA, S.P.">
-                            <option value="SURAHMAN, S.TP">
-                            <option value="UMAR, SP">
-                        </datalist>
+                <label class="text-xs font-bold text-slate-400 uppercase">Data Penyuluh</label>
+                <input type="text" id="in_nama" oninput="sync()" placeholder="Abdul Rahman, SP">
                 <input type="text" id="in_nip" oninput="sync()" placeholder="NIP">
                 <select id="in_jabatan" onchange="sync()">
                     <option value="Penyuluh Pertanian Pemula">Penyuluh Pertanian Pemula</option>
@@ -156,30 +140,12 @@
                 <p class="text-lg font-bold" id="out_jabatan_cover">PENYULUH PERTANIAN</p>
             </div>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Logo_Kementerian_Pertanian_Republik_Indonesia.svg/3840px-Logo_Kementerian_Pertanian_Republik_Indonesia.svg.png" class="w-48 mx-auto">
-            <div class="max-w-xl mx-auto text-left pl-10 uppercase">
-    <table style="border:none; width:100%; border-collapse: collapse; font-size: 12pt !important; line-height: 1.8;">
-        <tr style="border:none;">
-            <td style="border:none; width:160px; padding: 5px 0; font-weight: bold; vertical-align: top;">NAMA</td>
-            <td style="border:none; width:20px; padding: 5px 0; vertical-align: top;">:</td>
-            <td style="border:none; padding: 5px 0;"><b id="out_nama_cover">-</b></td>
-        </tr>
-        <tr style="border:none;">
-            <td style="border:none; padding: 5px 0; font-weight: bold; vertical-align: top;">NIP</td>
-            <td style="border:none; padding: 5px 0; vertical-align: top;">:</td>
-            <td style="border:none; padding: 5px 0;"><span id="out_nip_cover">-</span></td>
-        </tr>
-        <tr style="border:none;">
-            <td style="border:none; padding: 5px 0; font-weight: bold; vertical-align: top;">WKPP</td>
-            <td style="border:none; padding: 5px 0; vertical-align: top;">:</td>
-            <td style="border:none; padding: 5px 0; line-height: 1.4;"><span id="out_wkpp_cover">-</span></td>
-        </tr>
-        <tr style="border:none;">
-            <td style="border:none; padding: 5px 0; font-weight: bold; vertical-align: top;">BPP WILAYAH</td>
-            <td style="border:none; padding: 5px 0; vertical-align: top;">:</td>
-            <td style="border:none; padding: 5px 0;"><span id="out_bpp_cover">-</span></td>
-        </tr>
-    </table>
-</div>
+            <div class="max-w-md mx-auto text-left pl-10 space-y-3 uppercase text-sm">
+                <div class="grid grid-cols-3 gap-x-2"><span>NAMA</span><span class="col-span-2">: <b id="out_nama_cover">-</b></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>NIP</span><span class="col-span-2">: <span id="out_nip_cover">-</span></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>WKPP</span><span class="col-span-2">: <span id="out_wkpp_cover">-</span></span></div>
+                <div class="grid grid-cols-3 gap-x-2"><span>BPP WILAYAH</span><span class="col-span-2">: <span id="out_bpp_cover">-</span></span></div>
+            </div>
         </div>
         <div class="font-bold uppercase space-y-1">
             <p>KEMENTERIAN PERTANIAN</p>
@@ -252,62 +218,6 @@
     function closeWarning() {
     document.getElementById('browser-warning').style.display = 'none';
 }
-    const dataPenyuluh = {
-    "ABDUL RAHMAN, SP": {
-        nip: "199009202020121001",
-        wilayah: "DESA MANURUNG"
-    },
-    "A. FATHUR MUH. ISHAQ B, S.ST., M.Si": {
-        nip: "199604112020121001",
-        wilayah: "KEL. LAELO, KEL. TEMPE, KEL. CEMPALAGI"
-    },
-    "ANDI LUTHFIAH, SP": {
-        nip: "199307162020122003",
-        wilayah: "DESA MANNAGAE & DESA ASSORAJANG"
-    },
-    "FITRIYANTI HASNURI, S.TP": {
-        nip: "199409042020122001",
-        wilayah: "DESA ONGKOE"
-    },
-    "INDRA YULIANA, S.TP., M.Si.": {
-        nip: "199307062020122001",
-        wilayah: "DESA ALEWADENG"
-    },
-    "MIFTAHUL KHAIR, S.P.": {
-        nip: "199311192020122003",
-        wilayah: "DESA LEMPA"
-    },
-    "NURUL FAHMI, S.P.": {
-        nip: "198911142020122002",
-        wilayah: "DESA BOTTOBENTENG & DESA RUMPIA"
-    },
-    "REZKI RAHAYU, S.P.": {
-        nip: "199507052020122003",
-        wilayah: "KELURAHAN MAPPADAELO"
-    },
-    "RIZAL SMITH ANUGRAH SYAM, S.P.": {
-        nip: "199005152020121001",
-        wilayah: "DESA WORONGNGE"
-    },
-    "SUHADY HAMDAN, S.P.": {
-        nip: "199202072020121001",
-        wilayah: "DESA PASELLORENG & KELURAHAN GILIRENG"
-    },
-    "SULFIANITA, S.P.": {
-        nip: "199505082020122004",
-        wilayah: "DESA SIMPURSIA"
-    },
-    "SURAHMAN, S.TP": {
-        nip: "199203122020121003",
-        wilayah: "DESA BARANGMAMASE"
-    },
-    "UMAR, SP": {
-        nip: "199408272020121001",
-        wilayah: "DESA WALANGA & DESA RADDAE"
-    }
-};
-
-    
     const ikiRef = [
         { id: 1, k: "Jumlah Laporan Luas Tambah Tanam (Padi, Jagung, Kedelai)", tar: 3, sat: "Laporan" },
         { id: 2, k: "Persentase Pendampingan Produksi Hortikultura", tar: 100, sat: "%" },
@@ -362,23 +272,6 @@
         });
         sync();
     }
-function updateDataPenyuluh() {
-    const nama = document.getElementById('in_nama').value;
-    const data = dataPenyuluh[nama];
-    
-    if (data) {
-        // Isi NIP otomatis
-        document.getElementById('in_nip').value = data.nip;
-        // Isi WKPP otomatis
-        document.getElementById('in_wkpp').value = data.wilayah;
-        
-        // Khusus untuk Bapak (Abdul Rahman), BPP otomatis terisi "BOLA"
-        if (nama === "ABDUL RAHMAN, SP") {
-            document.getElementById('in_bpp').value = "BOLA";
-        }
-    }
-    sync(); // Jalankan sinkronisasi untuk memperbarui tampilan laporan/cover
-}
 
     function toggle(id) {
         document.getElementById(`box_${id}`).classList.toggle('hidden', !document.getElementById(`chk_${id}`).checked);
