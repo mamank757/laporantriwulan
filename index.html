@@ -488,7 +488,7 @@ async function generateAI() {
         return alert("Pilih minimal satu IKI!");
     }
 
-    const prompt = `Anda adalah PPL Pertanian Profesional. Tugas: Menyusun laporan TRIWULAN formal standar Kementerian Pertanian.
+    const prompt = `Anda adalah PPL Pertanian Profesional. Tugas: Menyusun laporan TRIWULAN formal standar Kementerian Pertanian di tahun ini (sesuai pembuatan laporan).
     Data Penyuluh: ${document.getElementById('in_nama').value}, BPP: ${document.getElementById('in_bpp').value}, Periode: ${document.getElementById('in_triwulan').value}.
     Data Realisasi: ${JSON.stringify(selectedData)}
     Aturan:
