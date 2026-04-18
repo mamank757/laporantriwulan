@@ -145,14 +145,25 @@
             </h2>
                   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
             <div class="lg:col-span-1 flex flex-col gap-3"> 
-              <label class="text-[10px] font-bold text-slate-400 uppercase">NAMA PENYULUH</label>
-<input type="text" id="in_nama" oninput="sync()" placeholder="Tulis Nama Lengkap & Gelar" class="w-full bg-slate-900 border-emerald-500/50 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500">
+            <label class="text-[10px] font-bold text-slate-400 uppercase">PILIH NAMA PENYULUH</label>
+<select id="in_nama" onchange="updateDataPenyuluh()" class="w-full bg-slate-900 border-emerald-500/50 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500">
+    <option value="" disabled selected>-- Pilih Nama --</option>
+    <option value="ABDUL RAHMAN, SP">ABDUL RAHMAN, SP</option>
+    <option value="A. FATHUR MUH. ISHAQ B, S.ST., M.Si">A. FATHUR MUH. ISHAQ B, S.ST., M.Si</option>
+    <option value="ANDI LUTHFIAH, SP">ANDI LUTHFIAH, SP</option>
+    <option value="FITRIYANTI HASNURI, S.TP">FITRIYANTI HASNURI, S.TP</option>
+    <option value="INDRA YULIANA, S.TP., M.Si.">INDRA YULIANA, S.TP., M.Si.</option>
+    <option value="MIFTAHUL KHAIR, S.P.">MIFTAHUL KHAIR, S.P.</option>
+    <option value="NURUL FAHMI, S.P.">NURUL FAHMI, S.P.</option>
+    <option value="REZKI RAHAYU, S.P.">REZKI RAHAYU, S.P.</option>
+    <option value="RIZAL SMITH ANUGRAH SYAM, S.P.">RIZAL SMITH ANUGRAH SYAM, S.P.</option>
+    <option value="SUHADY HAMDAN, S.P.">SUHADY HAMDAN, S.P.</option>
+    <option value="SULFIANITA, S.P.">SULFIANITA, S.P.</option>
+    <option value="SURAHMAN, S.TP">SURAHMAN, S.TP</option>
+    <option value="UMAR, SP">UMAR, SP</option>
+</select>
                 <input type="text" id="in_nip" oninput="sync()" placeholder="NIP">
                 <select id="in_jabatan" onchange="sync()">
-                        <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Pemula</option>
-                        <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Terampil</option>
-                        <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Mahir</option>
-                        <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Penyelia</option>
                         <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Ahli Pertama</option>
                         <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Ahli Muda</option>
                         <option value="Penyuluh Pertanian Ahli Madya">Penyuluh Pertanian Ahli Madya</option>
@@ -160,6 +171,7 @@
                 </select>
                 <input type="text" id="in_wkpp" oninput="sync()" placeholder="WKPP">
                 <input type="text" id="in_bpp" oninput="sync()" placeholder="Kecamatan/BPP">
+         
                 <select id="in_triwulan" onchange="sync()">
                     <option value="TRIWULAN I">Triwulan I</option>
                     <option value="TRIWULAN II">Triwulan II</option>
