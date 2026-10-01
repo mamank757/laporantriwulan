@@ -689,7 +689,8 @@ function updateDataPenyuluh() {
     }
 
     // 4. Buat Narasi Prompt
-    const tahunSekarang = new Date().getFullYear(); 
+    const tahunSekarang = new Date().getFullYear();
+    const idList = selectedData.map(d => d.id);
     const narasiPrompt = `Anda adalah PPL Pertanian Profesional. 
 Tugas: Menyusun laporan TRIWULAN formal standar Kementerian Pertanian untuk TAHUN ${tahunSekarang}.
 Data Penyuluh: ${document.getElementById('in_nama').value}, 
@@ -700,74 +701,116 @@ Aturan:
 1. 'latar': Narasi formal minimal 2 paragraf.
 2. 'tujuan': Deskripsi tujuan laporan.
 3. 'kesimp': Ringkasan evaluasi.
-4. 'items': Analisis progres dan solusi teknis.
-Output wajib JSON murni tanpa markdown: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
+4. 'items': WAJIB berisi TEPAT ${selectedData.length} objek, satu objek untuk SETIAP id berikut, tanpa terkecuali dan tanpa menomori ulang: [${idList.join(', ')}]. Setiap objek wajib punya field 'id' (angka, harus persis sama dengan salah satu id di daftar itu), 'analisis' (analisis progres capaian), dan 'tindak' (solusi teknis/tindak lanjut). Jangan melewatkan satu id pun, dan jangan menambahkan id lain di luar daftar.
+Output wajib JSON murni tanpa markdown dan tanpa teks pembuka/penutup apa pun: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
 
-    // 5. Eksekusi ke Google Apps Script
-    btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Ai sedang menyusun laporan...";
-    btn.disabled = true;
+    // 5. Eksekusi ke Google Apps Script, dengan percobaan ulang otomatis bila ada id yang terlewat
+    const maxAttempt = 2;
+    let aiData = null;
+    let lastError = null;
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzgVzmsk7PJkq4kVKqOz1H5tpo1RObVEIQunusP-HiZLRJ4qlqaseTTLVwrFRQ3VbIEuA/exec";
 
-   try {
-        const webAppUrl = "https://script.google.com/macros/s/AKfycby7nUaDtPwMCsBojA5mqzI0Z43Al2_sNk_QI_DZnBkjL_w4YbokF_D-Q5YutYncMHBpEw/exec";
+    for (let attempt = 1; attempt <= maxAttempt; attempt++) {
+        btn.innerHTML = attempt === 1
+            ? "<i class='fas fa-spinner fa-spin'></i> AI sedang menyusun laporan..."
+            : `<i class='fas fa-spinner fa-spin'></i> Melengkapi item yang terlewat (percobaan ${attempt})...`;
+        btn.disabled = true;
 
-        // Menggunakan method POST tanpa no-cors agar bisa membaca response
-        const response = await fetch(webAppUrl, {
-            method: "POST",
-            mode: "cors", // Pastikan cors, bukan no-cors
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8", // Gunakan text/plain untuk menghindari preflight CORS
-            },
-            body: JSON.stringify({ prompt: narasiPrompt })
-        });
+        try {
+            const response = await fetch(webAppUrl, {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ prompt: narasiPrompt })
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
 
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const result = await response.json();
-        
-        // Mengambil data dari response Apps Script (struktur Gemini)
-       let rawContent = result.candidates[0].content.parts[0].text;
-// Bersihkan jika ada bungkus markdown ```json
-rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
-const aiData = JSON.parse(rawContent);
+            const result = await response.json();
+            if (result.error) throw new Error(result.error);
 
+            const rawContent = result.candidates[0].content.parts[0].text;
+            const parsed = parseAiJson(rawContent);
+            if (!Array.isArray(parsed.items)) parsed.items = [];
+            aiData = parsed;
 
-        // 1. Isi Konten Naratif
-        document.getElementById('out_latar').innerHTML = aiData.latar;
-        document.getElementById('out_tujuan').innerHTML = aiData.tujuan;
-        document.getElementById('out_kesimp').innerHTML = aiData.kesimp;
+            const idsTerisiSementara = new Set(aiData.items.map(it => Number(it.id)));
+            const masihKurang = idList.filter(id => !idsTerisiSementara.has(id));
+            if (masihKurang.length === 0) break; // lengkap, tidak perlu percobaan lagi
+            lastError = `AI belum mengisi item id: ${masihKurang.join(', ')}`;
+        } catch (err) {
+            lastError = err.message;
+            aiData = null;
+        }
+    }
 
-        // 2. Isi Tabel Matriks & Sisipkan Link Bukti
-        aiData.items.forEach(item => {
-            const cellAnalisis = document.getElementById(`out_r_${item.id}`);
-            const cellKendala = document.getElementById(`out_k_${item.id}`);
-            
-            // Ambil nilai link dari input yang ada di form
-            const inputLink = document.getElementById(`link_${item.id}`) ? document.getElementById(`link_${item.id}`).value : "";
-
-            if (cellAnalisis) {
-                // Gabungkan Analisis AI dengan Link Bukti (dengan styling rapi)
-                let linkHTML = inputLink ? `<br><div style="margin-top:8px; padding-top:5px; border-top:1px dashed #ccc; font-size:7pt; color:blue; line-height:1.2;"><b>Link Bukti:</b> <a href="${inputLink}" target="_blank" style="word-break: break-all; text-decoration: underline;">${inputLink}</a></div>` : "";
-                
-                cellAnalisis.innerHTML = item.analisis + linkHTML;
-            }
-            
-            if (cellKendala) {
-                cellKendala.innerText = item.tindak;
-            }
-        });
-
-        // 3. Jalankan perapian halaman
-        applySmartBreak();
-        alert("✅ Narasi AI berhasil dibuat!");
-
-        btn.innerHTML = "🚀 GENERATE AI BERHASIL";
-        btn.disabled = false;
-
-    } catch (error) {
-        console.error(error);
-        alert("Gagal memproses AI: " + error.message);
+    if (!aiData) {
+        console.error(lastError);
+        alert("Gagal memproses AI setelah " + maxAttempt + "x percobaan: " + lastError + "\n\nSilakan klik Generate AI lagi.");
         btn.innerHTML = "🚀 GENERATE AI";
         btn.disabled = false;
+        return;
+    }
+
+    // 1. Isi Konten Naratif
+    document.getElementById('out_latar').innerHTML = aiData.latar || "-";
+    document.getElementById('out_tujuan').innerHTML = aiData.tujuan || "-";
+    document.getElementById('out_kesimp').innerHTML = aiData.kesimp || "-";
+
+    // 2. Isi Tabel Matriks & Sisipkan Link Bukti
+    const idsTerisi = new Set();
+    aiData.items.forEach(item => {
+        const id = Number(item.id);
+        idsTerisi.add(id);
+        const cellAnalisis = document.getElementById(`out_r_${id}`);
+        const cellKendala = document.getElementById(`out_k_${id}`);
+
+        const inputLink = document.getElementById(`link_${id}`) ? document.getElementById(`link_${id}`).value : "";
+
+        if (cellAnalisis) {
+            let linkHTML = inputLink ? `<br><div style="margin-top:8px; padding-top:5px; border-top:1px dashed #ccc; font-size:7pt; color:blue; line-height:1.2;"><b>Link Bukti:</b> <a href="${inputLink}" target="_blank" style="word-break: break-all; text-decoration: underline;">${inputLink}</a></div>` : "";
+            cellAnalisis.innerHTML = (item.analisis || "-") + linkHTML;
+        }
+        if (cellKendala) {
+            cellKendala.innerText = item.tindak || "-";
+        }
+    });
+
+    // 2b. Tandai dengan jelas item yang TETAP tidak terisi setelah semua percobaan,
+    // supaya tidak tersesat sebagai "Menunggu proses AI..." (seolah masih berjalan)
+    const idsHilang = idList.filter(id => !idsTerisi.has(id));
+    idsHilang.forEach(id => {
+        const cellAnalisis = document.getElementById(`out_r_${id}`);
+        const cellKendala = document.getElementById(`out_k_${id}`);
+        if (cellAnalisis) cellAnalisis.innerHTML = "⚠️ AI tidak mengisi item ini — klik 'Generate AI' lagi, atau isi manual.";
+        if (cellKendala) cellKendala.innerText = "-";
+    });
+
+    // 3. Jalankan perapian halaman
+    applySmartBreak();
+
+    if (idsHilang.length > 0) {
+        alert(`⚠️ Narasi dibuat, tapi ${idsHilang.length} item (id: ${idsHilang.join(', ')}) tidak terisi otomatis. Cek tabel matriks — klik Generate AI lagi atau isi manual untuk item yang ditandai ⚠️.`);
+        btn.innerHTML = "🚀 GENERATE AI (ada yang kosong)";
+    } else {
+        alert("✅ Narasi AI berhasil dibuat lengkap!");
+        btn.innerHTML = "🚀 GENERATE AI BERHASIL";
+    }
+    btn.disabled = false;
+}
+
+// Parsing JSON yang tahan banting: coba langsung, kalau gagal (ada teks nyasar
+// di luar JSON) ambil substring antara { pertama dan } terakhir lalu coba lagi.
+function parseAiJson(rawContent) {
+    const cleaned = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+    try {
+        return JSON.parse(cleaned);
+    } catch (e) {
+        const start = cleaned.indexOf('{');
+        const end = cleaned.lastIndexOf('}');
+        if (start !== -1 && end !== -1 && end > start) {
+            return JSON.parse(cleaned.substring(start, end + 1));
+        }
+        throw e;
     }
 }
 
