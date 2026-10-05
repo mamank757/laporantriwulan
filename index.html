@@ -162,35 +162,18 @@
 <div class="no-print max-w-7xl mx-auto p-4">
     <div class="no-print-area shadow-2xl border-t-4 border-emerald-500">
         <h2 class="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-3">
-           <i class="fa-solid fa-file-invoice"></i> PPL MILENIAL WAJO REPORT GENERATOR - TRIWULAN
+          <i class="fa-solid fa-file-invoice"></i> PPL WAJO REPORT GENERATOR - TRIWULAN
             </h2>
-            <p class="text-red-400 text-sm mt-1 font-medium">
-                FORM EKSLUSIF, SILAKAN GUNAKAN: 
-                <a href="https://mamank757.github.io/triwulan/" class="text-amber-400 hover:text-amber-300 underline underline-offset-4 transition-all">
-                    👉 FORM TRIWULAN (UMUM)
-                </a>
-            </p>
-        </div>
                   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
             <div class="lg:col-span-1 flex flex-col gap-3"> 
-            <label class="text-[10px] font-bold text-slate-400 uppercase">PILIH NAMA PENYULUH</label>
-<select id="in_nama" onchange="updateDataPenyuluh()" class="w-full bg-slate-900 border-emerald-500/50 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500">
-    <option value="" disabled selected>-- Pilih Nama --</option>
-    <option value="ABDUL RAHMAN, SP">ABDUL RAHMAN, SP</option>
-        <option value="A. FATHUR MUH. ISHAQ B, S.ST., M.Si">A. FATHUR MUH. ISHAQ B, S.ST., M.Si</option>
-    <option value="ANDI LUTHFIAH, SP">ANDI LUTHFIAH, SP</option>
-      <option value="INDRA YULIANA, S.TP., M.Si.">INDRA YULIANA, S.TP., M.Si.</option>
-    <option value="MIFTAHUL KHAIR, S.P.">MIFTAHUL KHAIR, S.P.</option>
-    <option value="NURUL FAHMI, S.P.">NURUL FAHMI, S.P.</option>
-    <option value="REZKI RAHAYU, S.P.">REZKI RAHAYU, S.P.</option>
-    <option value="RIZAL SMITH ANUGRAH SYAM, S.P.">RIZAL SMITH ANUGRAH SYAM, S.P.</option>
-    <option value="SUHADY HAMDAN, S.P.">SUHADY HAMDAN, S.P.</option>
-    <option value="SULFIANITA, S.P.">SULFIANITA, S.P.</option>
-    <option value="SURAHMAN, S.TP">SURAHMAN, S.TP</option>
-    <option value="UMAR, SP">UMAR, SP</option>
-</select>
+              <label class="text-[10px] font-bold text-slate-400 uppercase">NAMA PENYULUH</label>
+<input type="text" id="in_nama" oninput="sync()" placeholder="Tulis Nama Lengkap & Gelar" class="w-full bg-slate-900 border-emerald-500/50 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500">
                 <input type="text" id="in_nip" oninput="sync()" placeholder="NIP">
                 <select id="in_jabatan" onchange="sync()">
+                        <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Pemula</option>
+                        <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Terampil</option>
+                        <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Mahir</option>
+                        <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Penyelia</option>
                         <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Ahli Pertama</option>
                         <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Ahli Muda</option>
                         <option value="Penyuluh Pertanian Ahli Madya">Penyuluh Pertanian Ahli Madya</option>
@@ -198,7 +181,6 @@
                 </select>
                 <input type="text" id="in_wkpp" oninput="sync()" placeholder="WKPP">
                 <input type="text" id="in_bpp" oninput="sync()" placeholder="Kecamatan/BPP">
-         
                 <select id="in_triwulan" onchange="sync()">
                     <option value="TRIWULAN I">Triwulan I</option>
                     <option value="TRIWULAN II">Triwulan II</option>
@@ -384,7 +366,7 @@
 
 <script>
     // 1. DAFTAR BLOKIR NIP
-    const daftarNipTerblokir = ["199409042020122001", "19940904 202012 2 001"];
+    const daftarNipTerblokir = ["199409042020122001", "19940904 202012 2 001", "199904112022032002", "19990411 202203 2 002"];
 
     function closeWarning() {
         document.getElementById('browser-warning').style.display = 'none';
@@ -509,10 +491,9 @@ const dataPenyuluh = {
         const val = nipInput.value.trim();
         
         if (daftarNipTerblokir.includes(val)) {
-            btnAi.style.backgroundColor = "#991b1b";
-            btnAi.innerHTML = "🚫 AKSES DIBLOKIR";
+            
             btnAi.disabled = true;
-            nipInput.style.color = "red";
+            
         } else {
             btnAi.style.backgroundColor = "";
             btnAi.innerHTML = "🚀 GENERATE AI";
@@ -540,24 +521,6 @@ const dataPenyuluh = {
         </div>`;
     });
     sync();
-}
-
-function updateDataPenyuluh() {
-    const nama = document.getElementById('in_nama').value;
-    const data = dataPenyuluh[nama];
-    
-    if (data) {
-        // Isi NIP otomatis
-        document.getElementById('in_nip').value = data.nip;
-        // Isi WKPP otomatis
-        document.getElementById('in_wkpp').value = data.wilayah;
-        
-        // Khusus untuk Bapak (Abdul Rahman), BPP otomatis terisi "BOLA"
-        if (nama === "ABDUL RAHMAN, SP") {
-            document.getElementById('in_bpp').value = "BOLA";
-        }
-    }
-    sync(); // Jalankan sinkronisasi untuk memperbarui tampilan laporan/cover
 }
 
     function toggle(id) {
@@ -659,7 +622,7 @@ function updateDataPenyuluh() {
 
     // 2. Logika Blokir NIP
     if (daftarNipTerblokir.includes(nipVal)) {
-        alert("🚫 AKSES DIBLOKIR");
+        
         return;
     }
 
@@ -689,8 +652,7 @@ function updateDataPenyuluh() {
     }
 
     // 4. Buat Narasi Prompt
-    const tahunSekarang = new Date().getFullYear();
-    const idList = selectedData.map(d => d.id);
+    const tahunSekarang = new Date().getFullYear(); 
     const narasiPrompt = `Anda adalah PPL Pertanian Profesional. 
 Tugas: Menyusun laporan TRIWULAN formal standar Kementerian Pertanian untuk TAHUN ${tahunSekarang}.
 Data Penyuluh: ${document.getElementById('in_nama').value}, 
@@ -701,116 +663,74 @@ Aturan:
 1. 'latar': Narasi formal minimal 2 paragraf.
 2. 'tujuan': Deskripsi tujuan laporan.
 3. 'kesimp': Ringkasan evaluasi.
-4. 'items': WAJIB berisi TEPAT ${selectedData.length} objek, satu objek untuk SETIAP id berikut, tanpa terkecuali dan tanpa menomori ulang: [${idList.join(', ')}]. Setiap objek wajib punya field 'id' (angka, harus persis sama dengan salah satu id di daftar itu), 'analisis' (analisis progres capaian), dan 'tindak' (solusi teknis/tindak lanjut). Jangan melewatkan satu id pun, dan jangan menambahkan id lain di luar daftar.
-Output wajib JSON murni tanpa markdown dan tanpa teks pembuka/penutup apa pun: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
+4. 'items': Analisis progres dan solusi teknis.
+Output wajib JSON murni tanpa markdown: {"latar":"", "tujuan":"", "kesimp":"", "items":[{"id":1, "analisis":"", "tindak":""}]}`;
 
-    // 5. Eksekusi ke Google Apps Script, dengan percobaan ulang otomatis bila ada id yang terlewat
-    const maxAttempt = 2;
-    let aiData = null;
-    let lastError = null;
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzgVzmsk7PJkq4kVKqOz1H5tpo1RObVEIQunusP-HiZLRJ4qlqaseTTLVwrFRQ3VbIEuA/exec";
+    // 5. Eksekusi ke Google Apps Script
+    btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Ai sedang menyusun laporan...";
+    btn.disabled = true;
 
-    for (let attempt = 1; attempt <= maxAttempt; attempt++) {
-        btn.innerHTML = attempt === 1
-            ? "<i class='fas fa-spinner fa-spin'></i> AI sedang menyusun laporan..."
-            : `<i class='fas fa-spinner fa-spin'></i> Melengkapi item yang terlewat (percobaan ${attempt})...`;
-        btn.disabled = true;
+   try {
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbwrPhasTpSmxlwnNM9E3G4-6sEfMzsEnuWlcxn0vGnHBzPnZe-eLNZOzSMrW5BzLHNORw/exec";
 
-        try {
-            const response = await fetch(webAppUrl, {
-                method: "POST",
-                mode: "cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ prompt: narasiPrompt })
-            });
-            if (!response.ok) throw new Error('Network response was not ok');
+        // Menggunakan method POST tanpa no-cors agar bisa membaca response
+        const response = await fetch(webAppUrl, {
+            method: "POST",
+            mode: "cors", // Pastikan cors, bukan no-cors
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8", // Gunakan text/plain untuk menghindari preflight CORS
+            },
+            body: JSON.stringify({ prompt: narasiPrompt })
+        });
 
-            const result = await response.json();
-            if (result.error) throw new Error(result.error);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const result = await response.json();
+        
+        // Mengambil data dari response Apps Script (struktur Gemini)
+       let rawContent = result.candidates[0].content.parts[0].text;
+// Bersihkan jika ada bungkus markdown ```json
+rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+const aiData = JSON.parse(rawContent);
 
-            const rawContent = result.candidates[0].content.parts[0].text;
-            const parsed = parseAiJson(rawContent);
-            if (!Array.isArray(parsed.items)) parsed.items = [];
-            aiData = parsed;
 
-            const idsTerisiSementara = new Set(aiData.items.map(it => Number(it.id)));
-            const masihKurang = idList.filter(id => !idsTerisiSementara.has(id));
-            if (masihKurang.length === 0) break; // lengkap, tidak perlu percobaan lagi
-            lastError = `AI belum mengisi item id: ${masihKurang.join(', ')}`;
-        } catch (err) {
-            lastError = err.message;
-            aiData = null;
-        }
-    }
+        // 1. Isi Konten Naratif
+        document.getElementById('out_latar').innerHTML = aiData.latar;
+        document.getElementById('out_tujuan').innerHTML = aiData.tujuan;
+        document.getElementById('out_kesimp').innerHTML = aiData.kesimp;
 
-    if (!aiData) {
-        console.error(lastError);
-        alert("Gagal memproses AI setelah " + maxAttempt + "x percobaan: " + lastError + "\n\nSilakan klik Generate AI lagi.");
+        // 2. Isi Tabel Matriks & Sisipkan Link Bukti
+        aiData.items.forEach(item => {
+            const cellAnalisis = document.getElementById(`out_r_${item.id}`);
+            const cellKendala = document.getElementById(`out_k_${item.id}`);
+            
+            // Ambil nilai link dari input yang ada di form
+            const inputLink = document.getElementById(`link_${item.id}`) ? document.getElementById(`link_${item.id}`).value : "";
+
+            if (cellAnalisis) {
+                // Gabungkan Analisis AI dengan Link Bukti (dengan styling rapi)
+                let linkHTML = inputLink ? `<br><div style="margin-top:8px; padding-top:5px; border-top:1px dashed #ccc; font-size:7pt; color:blue; line-height:1.2;"><b>Link Bukti:</b> <a href="${inputLink}" target="_blank" style="word-break: break-all; text-decoration: underline;">${inputLink}</a></div>` : "";
+                
+                cellAnalisis.innerHTML = item.analisis + linkHTML;
+            }
+            
+            if (cellKendala) {
+                cellKendala.innerText = item.tindak;
+            }
+        });
+
+        // 3. Jalankan perapian halaman
+        applySmartBreak();
+        alert("✅ Narasi AI berhasil dibuat!");
+
+        btn.innerHTML = "🚀 GENERATE AI BERHASIL";
+        btn.disabled = false;
+
+    } catch (error) {
+        console.error(error);
+        alert("Gagal memproses AI: " + error.message);
         btn.innerHTML = "🚀 GENERATE AI";
         btn.disabled = false;
-        return;
-    }
-
-    // 1. Isi Konten Naratif
-    document.getElementById('out_latar').innerHTML = aiData.latar || "-";
-    document.getElementById('out_tujuan').innerHTML = aiData.tujuan || "-";
-    document.getElementById('out_kesimp').innerHTML = aiData.kesimp || "-";
-
-    // 2. Isi Tabel Matriks & Sisipkan Link Bukti
-    const idsTerisi = new Set();
-    aiData.items.forEach(item => {
-        const id = Number(item.id);
-        idsTerisi.add(id);
-        const cellAnalisis = document.getElementById(`out_r_${id}`);
-        const cellKendala = document.getElementById(`out_k_${id}`);
-
-        const inputLink = document.getElementById(`link_${id}`) ? document.getElementById(`link_${id}`).value : "";
-
-        if (cellAnalisis) {
-            let linkHTML = inputLink ? `<br><div style="margin-top:8px; padding-top:5px; border-top:1px dashed #ccc; font-size:7pt; color:blue; line-height:1.2;"><b>Link Bukti:</b> <a href="${inputLink}" target="_blank" style="word-break: break-all; text-decoration: underline;">${inputLink}</a></div>` : "";
-            cellAnalisis.innerHTML = (item.analisis || "-") + linkHTML;
-        }
-        if (cellKendala) {
-            cellKendala.innerText = item.tindak || "-";
-        }
-    });
-
-    // 2b. Tandai dengan jelas item yang TETAP tidak terisi setelah semua percobaan,
-    // supaya tidak tersesat sebagai "Menunggu proses AI..." (seolah masih berjalan)
-    const idsHilang = idList.filter(id => !idsTerisi.has(id));
-    idsHilang.forEach(id => {
-        const cellAnalisis = document.getElementById(`out_r_${id}`);
-        const cellKendala = document.getElementById(`out_k_${id}`);
-        if (cellAnalisis) cellAnalisis.innerHTML = "⚠️ AI tidak mengisi item ini — klik 'Generate AI' lagi, atau isi manual.";
-        if (cellKendala) cellKendala.innerText = "-";
-    });
-
-    // 3. Jalankan perapian halaman
-    applySmartBreak();
-
-    if (idsHilang.length > 0) {
-        alert(`⚠️ Narasi dibuat, tapi ${idsHilang.length} item (id: ${idsHilang.join(', ')}) tidak terisi otomatis. Cek tabel matriks — klik Generate AI lagi atau isi manual untuk item yang ditandai ⚠️.`);
-        btn.innerHTML = "🚀 GENERATE AI (ada yang kosong)";
-    } else {
-        alert("✅ Narasi AI berhasil dibuat lengkap!");
-        btn.innerHTML = "🚀 GENERATE AI BERHASIL";
-    }
-    btn.disabled = false;
-}
-
-// Parsing JSON yang tahan banting: coba langsung, kalau gagal (ada teks nyasar
-// di luar JSON) ambil substring antara { pertama dan } terakhir lalu coba lagi.
-function parseAiJson(rawContent) {
-    const cleaned = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
-    try {
-        return JSON.parse(cleaned);
-    } catch (e) {
-        const start = cleaned.indexOf('{');
-        const end = cleaned.lastIndexOf('}');
-        if (start !== -1 && end !== -1 && end > start) {
-            return JSON.parse(cleaned.substring(start, end + 1));
-        }
-        throw e;
     }
 }
 
